@@ -40,11 +40,11 @@ should show:
 Total: 100000
 Remaining: 84480
 Top costs:
-shoes:-8000.000000
-sushi:-5100.000000
-book:-1800.000000
-train:-320.000000
-coffee:-300.000000
+    shoes: -8000.00
+    sushi: -5100.00
+    book: -1800.00
+    train: -320.00
+    coffee: -300.00
 ```
 
 ## you might also like
