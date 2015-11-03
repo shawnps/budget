@@ -17,11 +17,13 @@ var (
 	month = flag.String("m", "", "year/month in format YYYYMM")
 )
 
+// Transaction is a single transaction with a cost and name
 type Transaction struct {
 	Cost float64
 	Name string
 }
 
+// Budget is a monthly budget
 type Budget struct {
 	Total        float64
 	Remaining    float64
@@ -73,8 +75,8 @@ func parseFile(name string) (Budget, error) {
 	return b, nil
 }
 
-// modified from https://groups.google.com/forum/#!topic/golang-nuts/FT7cjmcL7gw
 // Pair is a data structure to hold a key/value pair.
+// modified from https://groups.google.com/forum/#!topic/golang-nuts/FT7cjmcL7gw
 type Pair struct {
 	Key   string
 	Value float64
