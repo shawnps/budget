@@ -116,6 +116,6 @@ func main() {
 	fmt.Println("Top costs:")
 	pl := sortMapByValue(top)
 	for _, p := range pl {
-		fmt.Printf("%s:%f\n", p.Key, p.Value)
+		fmt.Printf("%s:%.2f\n", p.Key, p.Value)
 	}
 }
