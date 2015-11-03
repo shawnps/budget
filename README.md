@@ -3,6 +3,7 @@ super simple budget thing
 
 ## how to use
 `go get github.com/shawnps/budget`
+
 `mkdir budget`
 
 filenames must use format YYYYMM.txt, for example:
