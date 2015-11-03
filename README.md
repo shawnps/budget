@@ -27,7 +27,7 @@ files must be in following format:
 
 the top number is the total you want to spend per month. the lines after are things you have bought.
 
-you must call the command from one directory outside of `budget/`
+you must either call the command from one directory outside of `budget/`, or provide the directory with `-d`
 
 if everything is setup properly,
 
