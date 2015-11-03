@@ -17,6 +17,12 @@ files must be in following format:
 -550,sushi
 -320,train
 -8000,shoes
+-1050,sushi
+-3000,sushi
+-800,book
+-300,coffee
+-1000,book
+-500,sushi
 ```
 
 the top number is the total you want to spend per month. the lines after are things you have bought.
@@ -32,7 +38,13 @@ should show:
 ```
 ➜  ~  budget -m 201510
 Total: 100000
-Remaining: 92000
+Remaining: 84480
+Top costs:
+shoes:-8000.000000
+sushi:-5100.000000
+book:-1800.000000
+train:-320.000000
+coffee:-300.000000
 ```
 
 ## you might also like
