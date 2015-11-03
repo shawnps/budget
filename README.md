@@ -34,8 +34,8 @@ Remaining: 92000
 ```
 
 ## you might also like
-http://www.ledger-cli.org/index.html
+[Ledger](http://www.ledger-cli.org/index.html)
 
-https://www.youneedabudget.com/
+[YNAB](https://www.youneedabudget.com/)
 
-http://personalfinance.reddit.com/
+[Personal Finance Reddit](http://personalfinance.reddit.com/)
