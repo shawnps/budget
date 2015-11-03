@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -101,15 +102,57 @@ func sortMapByValue(m map[string]float64) PairList {
 	return p
 }
 
+// borrowed from golang src time pkg
+// daysBefore[m] counts the number of days in a non-leap year
+// before month m begins.  There is an entry for m=12, counting
+// the number of days before January of next year (365).
+var daysBefore = [...]int32{
+	0,
+	31,
+	31 + 28,
+	31 + 28 + 31,
+	31 + 28 + 31 + 30,
+	31 + 28 + 31 + 30 + 31,
+	31 + 28 + 31 + 30 + 31 + 30,
+	31 + 28 + 31 + 30 + 31 + 30 + 31,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30,
+	31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + 31,
+}
+
+func isLeap(year int) bool {
+	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
+}
+
+func daysIn(m time.Month, year int) int {
+	if m == time.February && isLeap(year) {
+		return 29
+	}
+	return int(daysBefore[m] - daysBefore[m-1])
+}
+
 func main() {
 	flag.Parse()
 	b, err := parseFile(fmt.Sprintf("%s/%s.txt", *dir, *month))
 	if err != nil {
 		log.Fatal(err)
 	}
-	top := map[string]float64{}
 	fmt.Println("Total:", b.Total)
 	fmt.Println("Remaining:", b.Remaining)
+	mon := *month
+	year, err := strconv.Atoi(mon[0:4])
+	if err != nil {
+		log.Fatal(err)
+	}
+	m, err := strconv.Atoi(mon[4:6])
+	if err != nil {
+		log.Fatal(err)
+	}
+	rpd := b.Remaining / float64(daysIn(time.Month(m), year)-time.Now().Day())
+	fmt.Println("Remaining/day:", rpd)
+	top := map[string]float64{}
 	for _, t := range b.Transactions {
 		top[t.Name] += t.Cost
 	}
