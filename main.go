@@ -151,7 +151,7 @@ func main() {
 		log.Fatal(err)
 	}
 	rpd := b.Remaining / float64(daysIn(time.Month(m), year)-time.Now().Day())
-	fmt.Println("Remaining/day:", rpd)
+	fmt.Printf("Remaining/day: %.2f\n", rpd)
 	top := map[string]float64{}
 	for _, t := range b.Transactions {
 		top[t.Name] += t.Cost
