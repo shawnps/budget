@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	dir   = flag.String("d", "budget", "budget data directory")
 	month = flag.String("m", "", "year/month in format YYYYMM")
 )
 
@@ -72,7 +73,7 @@ func parseFile(name string) (Budget, error) {
 
 func main() {
 	flag.Parse()
-	b, err := parseFile(fmt.Sprintf("budget/%s.txt", *month))
+	b, err := parseFile(fmt.Sprintf("%s/%s.txt", *dir, *month))
 	if err != nil {
 		log.Fatal(err)
 	}
