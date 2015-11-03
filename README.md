@@ -6,7 +6,7 @@ super simple budget thing
 
 `mkdir budget`
 
-filenames must use format YYYYMM.txt, for example:
+filenames must use format `YYYYMM.txt`, for example:
 
 `budget/201510.txt`
 
@@ -20,6 +20,8 @@ files must be in following format:
 ```
 
 the top number is the total you want to spend per month. the lines after are things you have bought.
+
+you must call the command from one directory outside of `budget/`
 
 if everything is setup properly,
 
