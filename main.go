@@ -65,8 +65,9 @@ func parseFile(name string) (Budget, error) {
 		b.Transactions = append(b.Transactions, trans)
 	}
 
+	b.Remaining = b.Total
 	for _, trans := range b.Transactions {
-		b.Remaining = b.Total + trans.Cost
+		b.Remaining = b.Remaining + trans.Cost
 	}
 	return b, nil
 }
