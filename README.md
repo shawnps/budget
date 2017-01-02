@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/shawnps/budget)](https://goreportcard.com/report/github.com/shawnps/budget)
+
 # budget
 super simple budget thing
 
