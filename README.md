@@ -1,3 +1,5 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/shawnps/budget)](https://goreportcard.com/report/github.com/shawnps/budget)
+
 # budget
 super simple budget thing
 
@@ -39,12 +41,13 @@ should show:
 ➜  ~  budget -m 201510
 Total: 100000
 Remaining: 84480
+Remaining/day: 16896.00
 Top costs:
-    shoes: -8000.00
-    sushi: -5100.00
-    book: -1800.00
-    train: -320.00
-    coffee: -300.00
+	shoes: -8000.00
+	sushi: -5100.00
+	book: -1800.00
+	train: -320.00
+	coffee: -300.00
 ```
 
 ## you might also like
