@@ -64,7 +64,7 @@ func parseFile(name string) (Budget, error) {
 		if err != nil {
 			return Budget{}, err
 		}
-		trans := Transaction{Cost: cost, Name: t[1]}
+		trans := Transaction{Cost: cost, Name: strings.TrimSpace(t[1])}
 
 		b.Transactions = append(b.Transactions, trans)
 	}
