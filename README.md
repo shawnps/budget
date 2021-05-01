@@ -3,7 +3,7 @@
 # budget
 Super simple budget tool
 
-## how to use
+## How to use
 `go get github.com/shawnps/budget`
 
 `mkdir budget`
