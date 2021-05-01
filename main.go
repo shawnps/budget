@@ -53,17 +53,21 @@ func parseFile(name string) (Budget, error) {
 		if err == io.EOF {
 			break
 		}
+
 		if err != nil {
 			return Budget{}, err
 		}
+
 		t := strings.Split(string(line), ",")
 		if len(t) != 2 {
 			return Budget{}, fmt.Errorf("invalid line %q", line)
 		}
+
 		cost, err := strconv.ParseFloat(t[0], 64)
 		if err != nil {
 			return Budget{}, err
 		}
+
 		trans := Transaction{Cost: cost, Name: strings.TrimSpace(t[1])}
 
 		b.Transactions = append(b.Transactions, trans)
@@ -71,8 +75,9 @@ func parseFile(name string) (Budget, error) {
 
 	b.Remaining = b.Total
 	for _, trans := range b.Transactions {
-		b.Remaining = b.Remaining + trans.Cost
+		b.Remaining -= trans.Cost
 	}
+
 	return b, nil
 }
 
@@ -94,11 +99,13 @@ func (p PairList) Less(i, j int) bool { return p[i].Value < p[j].Value }
 func sortMapByValue(m map[string]float64) PairList {
 	p := make(PairList, len(m))
 	i := 0
+
 	for k, v := range m {
 		p[i] = Pair{k, v}
 		i++
 	}
-	sort.Sort(p)
+
+	sort.Reverse(p)
 	return p
 }
 
@@ -139,23 +146,29 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	fmt.Println("Total:", b.Total)
 	fmt.Println("Remaining:", b.Remaining)
+
 	mon := *month
 	year, err := strconv.Atoi(mon[0:4])
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	m, err := strconv.Atoi(mon[4:6])
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	rpd := b.Remaining / float64(daysIn(time.Month(m), year)-time.Now().Day())
 	fmt.Printf("Remaining/day: %.2f\n", rpd)
+
 	top := map[string]float64{}
 	for _, t := range b.Transactions {
 		top[t.Name] += t.Cost
 	}
+
 	fmt.Println("Top costs:")
 	pl := sortMapByValue(top)
 	for _, p := range pl {

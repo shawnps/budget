@@ -1,56 +1,54 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/shawnps/budget)](https://goreportcard.com/report/github.com/shawnps/budget)
 
 # budget
-super simple budget thing
+Super simple budget tool
 
 ## how to use
 `go get github.com/shawnps/budget`
 
 `mkdir budget`
 
-filenames must use format `YYYYMM.txt`, for example:
+Filenames must use format `YYYYMM.txt`:
 
-`budget/201510.txt`
+`budget/202105.txt`
 
-files must be in following format:
+Files must be in following format:
 
 ```
-100000
--550,sushi
--320,train
--8000,shoes
--1050,sushi
--3000,sushi
--800,book
--300,coffee
--1000,book
--500,sushi
+1000
+5.50,sushi
+10.50,sushi
+15.00,sushi
+8.00,book
+3.00,coffee
+10.00,book
+8.00,sushi
+4.00,coffee
+3.00,coffee
 ```
 
-the top number is the total you want to spend per month. the lines after are things you have bought.
+The top number is the total you want to spend per month. Each line after is something you bought.
 
-you must either call the command from one directory outside of `budget/`, or provide the directory with `-d`
+Either call the command from one directory outside of `budget/`, or provide the directory with `-d`
 
-if everything is setup properly,
+If everything is setup properly,
 
-`budget -m 201510`
+`budget -m 202105`
 
 should show:
 
 ```
-➜  ~  budget -m 201510
-Total: 100000
-Remaining: 84480
-Remaining/day: 16896.00
+$ budget -m 202105
+Total: 1000
+Remaining: 933
+Remaining/day: 32.17
 Top costs:
-	shoes: -8000.00
-	sushi: -5100.00
-	book: -1800.00
-	train: -320.00
-	coffee: -300.00
+	sushi: 39.00
+	book: 18.00
+	coffee: 10.00
 ```
 
-## you might also like
+## You might also like
 [Ledger](http://www.ledger-cli.org/index.html)
 
 [YNAB](https://www.youneedabudget.com/)
