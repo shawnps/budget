@@ -105,7 +105,7 @@ func sortMapByValue(m map[string]float64) PairList {
 		i++
 	}
 
-	sort.Reverse(p)
+	sort.Sort(sort.Reverse(p))
 	return p
 }
 
