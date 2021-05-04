@@ -58,7 +58,7 @@ func parseFile(name string) (Budget, error) {
 			return Budget{}, err
 		}
 
-		t := strings.Split(string(line), ",")
+		t := strings.SplitN(string(line), " ", 2)
 		if len(t) != 2 {
 			return Budget{}, fmt.Errorf("invalid line %q", line)
 		}

@@ -16,15 +16,15 @@ Files must be in following format:
 
 ```
 1000
-5.50,sushi
-10.50,sushi
-15.00,sushi
-8.00,book
-3.00,coffee
-10.00,book
-8.00,sushi
-4.00,coffee
-3.00,coffee
+5.50 sushi
+10.50 sushi
+15.00 sushi
+8.00 book
+3.00 coffee
+10.00 book
+8.00 sushi
+4.00 coffee
+3.00 coffee
 ```
 
 The top number is the total you want to spend per month. Each line after is something you bought.
