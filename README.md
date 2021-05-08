@@ -39,13 +39,13 @@ should show:
 
 ```
 $ budget -m 202105
-Total: 1000
-Remaining: 933
-Remaining/day: 32.17
+Total:         1000.00
+Remaining:     933.00
+Remaining/day: 42.41
 Top costs:
-	sushi: 39.00
-	book: 18.00
-	coffee: 10.00
+    sushi:  39.00
+    book:   18.00
+    coffee: 10.00
 ```
 
 ## You might also like
