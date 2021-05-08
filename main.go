@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 	"time"
 )
 
@@ -147,8 +148,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Total:", b.Total)
-	fmt.Println("Remaining:", b.Remaining)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 0, ' ', 0)
+
+	fmt.Fprintf(w, "Total:\t %.2f\n", b.Total)
+	fmt.Fprintf(w, "Remaining:\t %.2f\n", b.Remaining)
 
 	mon := *month
 	year, err := strconv.Atoi(mon[0:4])
@@ -162,16 +165,18 @@ func main() {
 	}
 
 	rpd := b.Remaining / float64(daysIn(time.Month(m), year)-time.Now().Day())
-	fmt.Printf("Remaining/day: %.2f\n", rpd)
+	fmt.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
 
 	top := map[string]float64{}
 	for _, t := range b.Transactions {
 		top[t.Name] += t.Cost
 	}
 
-	fmt.Println("Top costs:")
+	fmt.Fprintf(w, "Top costs:\n")
 	pl := sortMapByValue(top)
 	for _, p := range pl {
-		fmt.Printf("\t%s: %.2f\n", p.Key, p.Value)
+		fmt.Fprintf(w, "    %s:\t %.2f\n", p.Key, p.Value)
 	}
+
+	w.Flush()
 }
