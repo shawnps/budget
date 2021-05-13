@@ -60,6 +60,10 @@ func parseFile(name string) (Budget, error) {
 		}
 
 		t := strings.SplitN(string(line), " ", 2)
+		if strings.TrimSpace(string(line)) == "" {
+			continue
+		}
+
 		if len(t) != 2 {
 			return Budget{}, fmt.Errorf("invalid line %q", line)
 		}
