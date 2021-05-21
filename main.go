@@ -17,6 +17,7 @@ import (
 var (
 	dir   = flag.String("d", "budget", "budget data directory")
 	month = flag.String("m", "", "year/month in format YYYYMM")
+	short = flag.Bool("short", false, "use tagged results when available")
 )
 
 // Transaction is a single transaction with a cost and name
@@ -29,6 +30,7 @@ type Transaction struct {
 type Budget struct {
 	Total        float64
 	Remaining    float64
+	TagMap       map[string]string
 	Transactions []Transaction
 }
 
@@ -37,6 +39,7 @@ func parseFile(name string) (Budget, error) {
 	if err != nil {
 		return Budget{}, err
 	}
+
 	r := bufio.NewReader(file)
 	b := Budget{}
 	// first line is the total for the month
@@ -44,11 +47,15 @@ func parseFile(name string) (Budget, error) {
 	if err != nil {
 		return Budget{}, err
 	}
+
 	total, err := strconv.ParseFloat(string(line), 64)
 	if err != nil {
 		return Budget{}, err
 	}
+
 	b.Total = total
+	tagMap := map[string]string{}
+
 	for {
 		line, _, err := r.ReadLine()
 		if err == io.EOF {
@@ -57,6 +64,22 @@ func parseFile(name string) (Budget, error) {
 
 		if err != nil {
 			return Budget{}, err
+		}
+
+		if strings.HasPrefix(string(line), "#") {
+			sp := strings.Split(string(line), ":")
+			if len(sp) != 2 {
+				return Budget{}, fmt.Errorf("invalid tag line %q", string(line))
+			}
+
+			tn := strings.TrimPrefix(sp[0], "# ")
+			items := strings.Split(sp[1], ",")
+
+			for _, item := range items {
+				tagMap[strings.TrimSpace(item)] = tn
+			}
+
+			continue
 		}
 
 		t := strings.SplitN(string(line), " ", 2)
@@ -78,6 +101,7 @@ func parseFile(name string) (Budget, error) {
 		b.Transactions = append(b.Transactions, trans)
 	}
 
+	b.TagMap = tagMap
 	b.Remaining = b.Total
 	for _, trans := range b.Transactions {
 		b.Remaining -= trans.Cost
@@ -173,10 +197,17 @@ func main() {
 
 	top := map[string]float64{}
 	for _, t := range b.Transactions {
-		top[t.Name] += t.Cost
+		_, inTagMap := b.TagMap[t.Name]
+
+		if !*short || !inTagMap {
+			top[t.Name] += t.Cost
+			continue
+		}
+
+		top[b.TagMap[t.Name]] += t.Cost
 	}
 
-	fmt.Fprintf(w, "Top costs:\n")
+	fmt.Fprintf(w, "Costs:\n")
 	pl := sortMapByValue(top)
 	for _, p := range pl {
 		fmt.Fprintf(w, "    %s:\t %.2f\n", p.Key, p.Value)

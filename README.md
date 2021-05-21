@@ -42,6 +42,39 @@ Top costs:
     coffee: 10.00
 ```
 
+## Tags
+
+You can also create a map of tags:
+
+```
+1000
+
+# food: sushi, coffee
+# books: book
+
+5.50 sushi
+10.50 sushi
+15.00 sushi
+8.00 book
+3.00 coffee
+10.00 book
+8.00 sushi
+4.00 coffee
+3.00 coffee
+```
+
+then pass the `-short` flag:
+
+```
+$ budget -m 202105 -short
+Total:         1000.00
+Remaining:     933.00
+Remaining/day: 42.41
+Costs:
+    food:  49.00
+    books: 18.00
+```
+
 ## You might also like
 [Ledger](http://www.ledger-cli.org/index.html)
 
