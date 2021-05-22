@@ -44,7 +44,7 @@ Top costs:
 
 ## Tags
 
-You can also create a map of tags:
+You can also create tags:
 
 ```
 1000
@@ -75,7 +75,7 @@ Costs:
     books: 18.00
 ```
 
-Tags can also be specified in a `tags.txt` file:
+You can also specify tags in a `tags.txt` file:
 
 ```
 food: sushi, coffee
