@@ -75,6 +75,13 @@ Costs:
     books: 18.00
 ```
 
+Tags can also be specified in a `tags.txt` file:
+
+```
+food: sushi, coffee
+books: book
+```
+
 ## You might also like
 [Ledger](http://www.ledger-cli.org/index.html)
 

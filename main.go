@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -34,7 +35,8 @@ type Budget struct {
 	Transactions []Transaction
 }
 
-func parseFile(name string) (Budget, error) {
+func parseFile(dir string, month string) (Budget, error) {
+	name := fmt.Sprintf("%s/%s.txt", dir, month)
 	file, err := os.Open(name)
 	if err != nil {
 		return Budget{}, err
@@ -101,7 +103,15 @@ func parseFile(name string) (Budget, error) {
 		b.Transactions = append(b.Transactions, trans)
 	}
 
-	b.TagMap = tagMap
+	tagMapFilename := filepath.Join(dir, "tags.txt")
+	fileTagMap, err := parseTagMapFile(tagMapFilename)
+	if os.IsNotExist(err) {
+		// tag file doesn't exist, ignore
+	} else if err != nil {
+		return Budget{}, err
+	}
+
+	b.TagMap = mergeTagMaps(tagMap, fileTagMap)
 	b.Remaining = b.Total
 	for _, trans := range b.Transactions {
 		b.Remaining -= trans.Cost
@@ -169,9 +179,59 @@ func daysIn(m time.Month, year int) int {
 	return int(daysBefore[m] - daysBefore[m-1])
 }
 
+func parseTagMapFile(filename string) (map[string]string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return map[string]string{}, err
+	}
+
+	tagMap := map[string]string{}
+
+	r := bufio.NewReader(file)
+
+	for {
+		line, _, err := r.ReadLine()
+		if err == io.EOF {
+			break
+		}
+
+		if err != nil {
+			return map[string]string{}, err
+		}
+
+		if strings.TrimSpace(string(line)) == "" {
+			continue
+		}
+
+		sp := strings.Split(string(line), ":")
+		if len(sp) != 2 {
+			return map[string]string{}, fmt.Errorf("invalid tag line %q", string(line))
+		}
+
+		tn := sp[0]
+		items := strings.Split(sp[1], ",")
+
+		for _, item := range items {
+			tagMap[strings.TrimSpace(item)] = tn
+		}
+	}
+
+	return tagMap, nil
+}
+
+func mergeTagMaps(tm, ftm map[string]string) map[string]string {
+	for k, v := range ftm {
+		if tm[k] == "" {
+			tm[k] = v
+		}
+	}
+
+	return tm
+}
+
 func main() {
 	flag.Parse()
-	b, err := parseFile(fmt.Sprintf("%s/%s.txt", *dir, *month))
+	b, err := parseFile(*dir, *month)
 	if err != nil {
 		log.Fatal(err)
 	}
