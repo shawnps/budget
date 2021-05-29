@@ -253,7 +253,6 @@ func main() {
 	}
 
 	dr := daysIn(time.Month(m), year) - time.Now().Day() + 1
-	fmt.Fprintf(w, "Days remaining:\t %d\n", dr)
 	rpd := b.Remaining / float64(dr)
 	fmt.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
 
