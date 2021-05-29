@@ -252,7 +252,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	rpd := b.Remaining / float64(daysIn(time.Month(m), year)-time.Now().Day())
+	dr := daysIn(time.Month(m), year) - time.Now().Day() + 1
+	fmt.Fprintf(w, "Days remaining:\t %d\n", dr)
+	rpd := b.Remaining / float64(dr)
 	fmt.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
 
 	top := map[string]float64{}
