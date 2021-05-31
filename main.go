@@ -16,9 +16,9 @@ import (
 )
 
 var (
-	dir   = flag.String("d", "budget", "budget data directory")
-	month = flag.String("m", "", "year/month in format YYYYMM")
-	short = flag.Bool("short", false, "use tagged results when available")
+	dir       = flag.String("d", "budget", "budget data directory")
+	yearMonth = flag.String("m", "", "year/month in format YYYYMM")
+	short     = flag.Bool("short", false, "use tagged results when available")
 )
 
 // Transaction is a single transaction with a cost and name
@@ -35,8 +35,8 @@ type Budget struct {
 	Transactions []Transaction
 }
 
-func parseFile(dir string, month string) (Budget, error) {
-	name := fmt.Sprintf("%s/%s.txt", dir, month)
+func parseFile(dir string, year int, month time.Month) (Budget, error) {
+	name := fmt.Sprintf("%s/%d%02d.txt", dir, year, month)
 	file, err := os.Open(name)
 	if err != nil {
 		return Budget{}, err
@@ -231,7 +231,28 @@ func mergeTagMaps(tm, ftm map[string]string) map[string]string {
 
 func main() {
 	flag.Parse()
-	b, err := parseFile(*dir, *month)
+
+	var (
+		year  = time.Now().Year()
+		month = time.Now().Month()
+		err   error
+	)
+
+	if ym := *yearMonth; ym != "" {
+		year, err = strconv.Atoi(ym[0:4])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		monthStr, err := strconv.Atoi(ym[4:6])
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		month = time.Month(monthStr)
+	}
+
+	b, err := parseFile(*dir, year, month)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -241,18 +262,7 @@ func main() {
 	fmt.Fprintf(w, "Total:\t %.2f\n", b.Total)
 	fmt.Fprintf(w, "Remaining:\t %.2f\n", b.Remaining)
 
-	mon := *month
-	year, err := strconv.Atoi(mon[0:4])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	m, err := strconv.Atoi(mon[4:6])
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	dr := daysIn(time.Month(m), year) - time.Now().Day() + 1
+	dr := daysIn(month, year) - time.Now().Day() + 1
 	rpd := b.Remaining / float64(dr)
 	fmt.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
 
