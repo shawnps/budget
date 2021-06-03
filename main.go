@@ -79,9 +79,13 @@ func main() {
 	fmt.Fprintf(w, "Total:\t %.2f\n", b.Total)
 	fmt.Fprintf(w, "Remaining:\t %.2f\n", b.Remaining)
 
-	dr := daysIn(month, year) - time.Now().Day() + 1
-	rpd := b.Remaining / float64(dr)
-	fmt.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
+	if year >= time.Now().Year() && month >= time.Now().Month() {
+		dr := daysIn(month, year) - time.Now().Day() + 1
+		rpd := b.Remaining / float64(dr)
+		fmt.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
+	} else {
+		fmt.Fprintf(w, "Spent:\t %.2f\n", b.Total-b.Remaining)
+	}
 
 	top := map[string]float64{}
 	for _, t := range b.Transactions {
