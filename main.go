@@ -14,6 +14,8 @@ import (
 	"time"
 
 	"github.com/shawnps/budget/pkg/budget"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 var (
@@ -74,17 +76,18 @@ func main() {
 		log.Fatal(err)
 	}
 
+	mp := message.NewPrinter(language.English)
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 0, ' ', 0)
 
-	fmt.Fprintf(w, "Total:\t %.2f\n", b.Total)
-	fmt.Fprintf(w, "Remaining:\t %.2f\n", b.Remaining)
+	mp.Fprintf(w, "Total:\t %.2f\n", b.Total)
+	mp.Fprintf(w, "Remaining:\t %.2f\n", b.Remaining)
 
 	if year >= time.Now().Year() && month >= time.Now().Month() {
 		dr := daysIn(month, year) - time.Now().Day() + 1
 		rpd := b.Remaining / float64(dr)
-		fmt.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
+		mp.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
 	} else {
-		fmt.Fprintf(w, "Spent:\t %.2f\n", b.Total-b.Remaining)
+		mp.Fprintf(w, "Spent:\t %.2f\n", b.Total-b.Remaining)
 	}
 
 	top := map[string]float64{}
@@ -102,7 +105,7 @@ func main() {
 	fmt.Fprintf(w, "Costs:\n")
 	pl := sortMapByValue(top)
 	for _, p := range pl {
-		fmt.Fprintf(w, "    %s:\t %.2f\n", p.Key, p.Value)
+		mp.Fprintf(w, "    %s:\t %.2f\n", p.Key, p.Value)
 	}
 
 	w.Flush()
