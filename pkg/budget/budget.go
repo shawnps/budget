@@ -74,7 +74,8 @@ func Parse(r, tm *bufio.Reader) (Budget, error) {
 			return Budget{}, fmt.Errorf("invalid line %q", line)
 		}
 
-		cost, err := strconv.ParseFloat(t[0], 64)
+		costStr := strings.ReplaceAll(t[0], ",", "")
+		cost, err := strconv.ParseFloat(costStr, 64)
 		if err != nil {
 			return Budget{}, err
 		}
