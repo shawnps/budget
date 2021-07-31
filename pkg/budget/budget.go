@@ -22,6 +22,22 @@ type Budget struct {
 	Transactions []Transaction
 }
 
+// CombineBudgets combines multiple budgets into a single budget
+func CombineBudgets(budgets []Budget) Budget {
+	var combined = Budget{
+		TagMap: map[string]string{},
+	}
+
+	for _, b := range budgets {
+		combined.Total += b.Total
+		combined.Remaining += b.Remaining
+		combined.TagMap = mergeTagMaps(combined.TagMap, b.TagMap)
+		combined.Transactions = append(combined.Transactions, b.Transactions...)
+	}
+
+	return combined
+}
+
 // Parse parses a single month's budget
 func Parse(r, tm *bufio.Reader) (Budget, error) {
 	b := Budget{}

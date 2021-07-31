@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -19,9 +20,10 @@ import (
 )
 
 var (
-	dir       = flag.String("d", "budget", "budget data directory")
-	yearMonth = flag.String("m", "", "year/month in format YYYYMM")
-	short     = flag.Bool("short", false, "use tagged results when available")
+	dir            = flag.String("d", "budget", "budget data directory")
+	yearMonth      = flag.String("m", "", "year/month in format YYYYMM")
+	yearMonthRange = flag.String("r", "", "year/month range in format YYYYMM-YYYYMM")
+	short          = flag.Bool("short", false, "use tagged results when available")
 )
 
 func main() {
@@ -33,18 +35,18 @@ func main() {
 		err   error
 	)
 
+	if *yearMonth != "" && *yearMonthRange != "" {
+		log.Fatal("can only use -m or -r")
+	}
+
 	if ym := *yearMonth; ym != "" {
-		year, err = strconv.Atoi(ym[0:4])
+		parsed, err := parseYearMonth(ym)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		monthStr, err := strconv.Atoi(ym[4:6])
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		month = time.Month(monthStr)
+		year = parsed.year
+		month = parsed.month
 	}
 
 	name := fmt.Sprintf("%s/%d%02d.txt", *dir, year, month)
@@ -71,44 +73,41 @@ func main() {
 		tm = bufio.NewReader(fileTagMap)
 	}
 
+	if *yearMonthRange != "" {
+		yearMonths, err := timeRange(*yearMonthRange)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var all []budget.Budget
+		for _, ym := range yearMonths {
+			name := fmt.Sprintf("%s/%d%02d.txt", *dir, ym.year, ym.month)
+			file, err := os.Open(name)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			r := bufio.NewReader(file)
+			b, err := budget.Parse(r, tm)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			all = append(all, b)
+		}
+
+		combined := budget.CombineBudgets(all)
+		printBudget(combined, 0, 0)
+		return
+	}
+
 	b, err := budget.Parse(r, tm)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	mp := message.NewPrinter(language.English)
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 0, ' ', 0)
-
-	mp.Fprintf(w, "Total:\t %.2f\n", b.Total)
-	mp.Fprintf(w, "Remaining:\t %.2f\n", b.Remaining)
-
-	if year >= time.Now().Year() && month >= time.Now().Month() {
-		dr := daysIn(month, year) - time.Now().Day() + 1
-		rpd := b.Remaining / float64(dr)
-		mp.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
-	} else {
-		mp.Fprintf(w, "Spent:\t %.2f\n", b.Total-b.Remaining)
-	}
-
-	top := map[string]float64{}
-	for _, t := range b.Transactions {
-		_, inTagMap := b.TagMap[t.Name]
-
-		if !*short || !inTagMap {
-			top[t.Name] += t.Cost
-			continue
-		}
-
-		top[b.TagMap[t.Name]] += t.Cost
-	}
-
-	fmt.Fprintf(w, "Costs:\n")
-	pl := sortMapByValue(top)
-	for _, p := range pl {
-		mp.Fprintf(w, "    %s:\t %.2f\n", p.Key, p.Value)
-	}
-
-	w.Flush()
+	printBudget(b, year, month)
 }
 
 // borrowed from golang src time pkg
@@ -168,4 +167,123 @@ func sortMapByValue(m map[string]float64) pairList {
 
 	sort.Sort(sort.Reverse(p))
 	return p
+}
+
+func printBudget(b budget.Budget, year int, month time.Month) {
+	mp := message.NewPrinter(language.English)
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 0, ' ', 0)
+
+	mp.Fprintf(w, "Total:\t %.2f\n", b.Total)
+	mp.Fprintf(w, "Remaining:\t %.2f\n", b.Remaining)
+
+	if year >= time.Now().Year() && month >= time.Now().Month() {
+		dr := daysIn(month, year) - time.Now().Day() + 1
+		rpd := b.Remaining / float64(dr)
+		mp.Fprintf(w, "Remaining/day:\t %.2f\n", rpd)
+	} else {
+		mp.Fprintf(w, "Spent:\t %.2f\n", b.Total-b.Remaining)
+	}
+
+	top := map[string]float64{}
+	for _, t := range b.Transactions {
+		_, inTagMap := b.TagMap[t.Name]
+
+		if !*short || !inTagMap {
+			top[t.Name] += t.Cost
+			continue
+		}
+
+		top[b.TagMap[t.Name]] += t.Cost
+	}
+
+	fmt.Fprintf(w, "Costs:\n")
+	pl := sortMapByValue(top)
+	for _, p := range pl {
+		mp.Fprintf(w, "    %s:\t %.2f\n", p.Key, p.Value)
+	}
+
+	w.Flush()
+}
+
+type budgetMonth struct {
+	year  int
+	month time.Month
+}
+
+func parseYearMonth(ym string) (budgetMonth, error) {
+	year, err := strconv.Atoi(ym[0:4])
+	if err != nil {
+		return budgetMonth{}, err
+	}
+
+	monthStr, err := strconv.Atoi(ym[4:6])
+	if err != nil {
+		return budgetMonth{}, err
+	}
+
+	month := time.Month(monthStr)
+
+	return budgetMonth{year, month}, nil
+}
+
+func timeRange(timeRange string) ([]budgetMonth, error) {
+	var bm []budgetMonth
+
+	sp := strings.Split(timeRange, "-")
+	if len(sp) != 2 {
+		return []budgetMonth{}, fmt.Errorf("invalid time range %q", timeRange)
+	}
+
+	first, second := sp[0], sp[1]
+
+	if len(first) != 6 || len(second) != 6 {
+		return []budgetMonth{}, fmt.Errorf("invalid time range %q", timeRange)
+	}
+
+	parsedFirst, err := parseYearMonth(first)
+	if err != nil {
+		return []budgetMonth{}, err
+	}
+
+	parsedSecond, err := parseYearMonth(second)
+	if err != nil {
+		return []budgetMonth{}, err
+	}
+
+	if parsedSecond.year < parsedFirst.year {
+		return []budgetMonth{}, errors.New("second year must be > first year")
+	}
+
+	if parsedFirst.year == parsedSecond.year {
+		for m := parsedFirst.month; m <= parsedSecond.month; m++ {
+			bm = append(bm, budgetMonth{parsedFirst.year, m})
+		}
+
+		return bm, nil
+	}
+
+	for m := parsedFirst.month; m <= 12; m++ {
+		bm = append(bm, budgetMonth{parsedFirst.year, m})
+	}
+
+	if parsedSecond.year-parsedFirst.year == 1 {
+		for m := time.Month(1); m <= parsedSecond.month; m++ {
+			bm = append(bm, budgetMonth{parsedSecond.year, m})
+		}
+
+		return bm, nil
+	}
+
+	for y := parsedFirst.year + 1; y <= parsedSecond.year; y++ {
+		var endMonth time.Month = time.Month(12)
+		if parsedSecond.year == y {
+			endMonth = parsedSecond.month
+		}
+
+		for m := time.Month(1); m <= endMonth; m++ {
+			bm = append(bm, budgetMonth{y, m})
+		}
+	}
+
+	return bm, nil
 }
