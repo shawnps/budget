@@ -44,23 +44,11 @@ Top costs:
 
 ## Tags
 
-You can also create tags:
+You can also create tags in a tags.txt file:
 
 ```
-1000
-
-# food: sushi, coffee
-# books: book
-
-5.50 sushi
-10.50 sushi
-15.00 sushi
-8.00 book
-3.00 coffee
-10.00 book
-8.00 sushi
-4.00 coffee
-3.00 coffee
+food: sushi, coffee
+books: book
 ```
 
 then pass the `-short` flag:
@@ -73,13 +61,6 @@ Remaining/day: 42.41
 Costs:
     food:  49.00
     books: 18.00
-```
-
-You can also specify tags in a `tags.txt` file:
-
-```
-food: sushi, coffee
-books: book
 ```
 
 ## You might also like

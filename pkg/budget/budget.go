@@ -66,18 +66,6 @@ func Parse(r, tm *bufio.Reader) (Budget, error) {
 		}
 
 		if strings.HasPrefix(string(line), "#") {
-			sp := strings.Split(string(line), ":")
-			if len(sp) != 2 {
-				return Budget{}, fmt.Errorf("invalid tag line %q", string(line))
-			}
-
-			tn := strings.TrimPrefix(sp[0], "# ")
-			items := strings.Split(sp[1], ",")
-
-			for _, item := range items {
-				tagMap[strings.TrimSpace(item)] = tn
-			}
-
 			continue
 		}
 

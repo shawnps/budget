@@ -1,8 +1,5 @@
 1000
 
-# food: sushi, coffee
-# books: book
-
 5.50 sushi
 10.50 sushi
 15.00 sushi
@@ -12,3 +9,5 @@
 8.00 sushi
 4.00 coffee
 3.00 coffee
+
+# comment
