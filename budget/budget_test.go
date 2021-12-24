@@ -4,21 +4,19 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 )
 
 func TestParse(t *testing.T) {
-	file, err := os.Open("../../testdata/budget/202105.txt")
+	file, err := os.Open("testdata/budget/202105.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	var tm *bufio.Reader
-	tagMapFilename := filepath.Join("../../testdata/budget/tags.txt")
-	fileTagMap, err := os.Open(tagMapFilename)
+	fileTagMap, err := os.Open("testdata/budget/tags.txt")
 	if os.IsNotExist(err) {
 		tm = bufio.NewReader(strings.NewReader(""))
 		// tag file doesn't exist, ignore

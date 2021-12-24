@@ -1,13 +1,13 @@
 1000
 
-5.50 sushi
+5.50 sushi # comment
 10.50 sushi
 15.00 sushi
 8.00 book
 3.00 coffee
 10.00 book
 8.00 sushi
-4.00 coffee
+4.00 coffee # comment
 3.00 coffee
 
 # comment

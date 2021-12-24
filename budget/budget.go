@@ -84,7 +84,9 @@ func Parse(r, tm *bufio.Reader) (Budget, error) {
 			return Budget{}, err
 		}
 
-		trans := Transaction{Cost: cost, Name: strings.TrimSpace(t[1])}
+		item := strings.Split(t[1], "#")[0]
+
+		trans := Transaction{Cost: cost, Name: strings.TrimSpace(item)}
 
 		b.Transactions = append(b.Transactions, trans)
 	}

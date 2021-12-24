@@ -14,7 +14,8 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/shawnps/budget/pkg/budget"
+	"github.com/shawnps/budget/budget"
+
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
