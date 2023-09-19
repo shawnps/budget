@@ -25,6 +25,7 @@ var (
 	yearMonth      = flag.String("m", "", "year/month in format YYYYMM")
 	yearMonthRange = flag.String("r", "", "year/month range in format YYYYMM-YYYYMM")
 	short          = flag.Bool("short", false, "use tagged results when available")
+	tag            = flag.String("tag", "", "get results for a given tag")
 )
 
 func main() {
@@ -187,7 +188,15 @@ func printBudget(b budget.Budget, year int, month time.Month) {
 
 	top := map[string]float64{}
 	for _, t := range b.Transactions {
-		_, inTagMap := b.TagMap[t.Name]
+		tmEntry, inTagMap := b.TagMap[t.Name]
+
+		if *tag != "" {
+			if tmEntry == *tag {
+				top[t.Name] += t.Cost
+			}
+
+			continue
+		}
 
 		if !*short || !inTagMap {
 			top[t.Name] += t.Cost
